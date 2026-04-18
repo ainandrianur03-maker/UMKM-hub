@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Seminar - Admin UMKM Starter Hub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <div id="sidebar"></div>
+        <main class="admin-main">
+            <div id="adminHeader"></div>
+            <div class="admin-content">
+                <div class="admin-page-header">
+                    <h3>🎓 Daftar Seminar & Webinar</h3>
+                    <button class="btn btn-primary" onclick="openModal()">+ Tambah Event</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>No</th><th>Judul</th><th>Tipe</th><th>Tanggal</th><th>Waktu</th><th>Aksi</th></tr></thead>
+                        <tbody id="seminarTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Event</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form onsubmit="saveSeminar(event)">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label class="form-label">Judul Event</label>
+                    <input type="text" class="form-control" id="sTitle" required placeholder="Judul seminar/webinar">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipe</label>
+                    <select class="form-control" id="sType"><option>Online</option><option>Offline</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal</label>
+                    <input type="date" class="form-control" id="sDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Waktu</label>
+                    <input type="text" class="form-control" id="sTime" required placeholder="09:00 - 12:00 WIB">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea class="form-control" id="sDesc" rows="3" placeholder="Deskripsi event"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        if (!checkAuth()) throw 'Not authenticated';
+        document.getElementById('sidebar').innerHTML = renderSidebar('seminar');
+        document.getElementById('adminHeader').innerHTML = renderAdminHeader('Kelola Seminar');
+
+        function loadTable() {
+            const seminars = DB.get('seminars') || [];
+            document.getElementById('seminarTable').innerHTML = seminars.map((s, i) => `<tr>
+                <td>${i + 1}</td>
+                <td><strong>${s.title}</strong><br><small style="color:var(--neutral-500)">${s.desc || ''}</small></td>
+                <td><span class="badge ${s.type === 'Online' ? 'badge-success' : 'badge-danger'}">${s.type}</span></td>
+                <td>${formatDate(s.date)}</td>
+                <td>${s.time}</td>
+                <td>
+                    <div class="flex gap-1">
+                        <button class="btn btn-sm btn-secondary" onclick="editSeminar('${s.id}')">✏️ Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSeminar('${s.id}')">🗑️</button>
+                    </div>
+                </td>
+            </tr>`).join('');
+        }
+
+        function openModal(id) {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('modalTitle').textContent = id ? 'Edit Event' : 'Tambah Event';
+            if (!id) { document.getElementById('editId').value = ''; document.querySelector('#modalOverlay form').reset(); }
+        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+
+        function editSeminar(id) {
+            const seminars = DB.get('seminars') || [];
+            const s = seminars.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('editId').value = s.id;
+            document.getElementById('sTitle').value = s.title;
+            document.getElementById('sType').value = s.type;
+            document.getElementById('sDate').value = s.date;
+            document.getElementById('sTime').value = s.time;
+            document.getElementById('sDesc').value = s.desc || '';
+            openModal(id);
+        }
+
+        function saveSeminar(e) {
+            e.preventDefault();
+            const seminars = DB.get('seminars') || [];
+            const editId = document.getElementById('editId').value;
+            const data = {
+                id: editId || genId(),
+                title: document.getElementById('sTitle').value,
+                type: document.getElementById('sType').value,
+                date: document.getElementById('sDate').value,
+                time: document.getElementById('sTime').value,
+                desc: document.getElementById('sDesc').value
+            };
+            if (editId) { const idx = seminars.findIndex(x => x.id === editId); if (idx >= 0) seminars[idx] = data; }
+            else { seminars.push(data); }
+            DB.set('seminars', seminars);
+            closeModal(); loadTable();
+            showToast(editId ? 'Event berhasil diperbarui!' : 'Event berhasil ditambahkan!');
+        }
+
+        function deleteSeminar(id) {
+            if (!confirm('Hapus event ini?')) return;
+            DB.set('seminars', (DB.get('seminars') || []).filter(x => x.id !== id));
+            loadTable();
+            showToast('Event berhasil dihapus!', 'error');
+        }
+        loadTable();
+    </script>
+</body>
+</html>
