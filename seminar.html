@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seminar & Webinar - UMKM Starter Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+    <div id="navbar"></div>
+    <section class="page-header">
+        <div class="container">
+            <div><h1>Seminar & Webinar</h1><p>Tingkatkan kemampuan usahamu lewat seminar pilihan.</p></div>
+            <div class="page-header-icon">🎓</div>
+        </div>
+    </section>
+    <section class="seminar-section">
+        <div class="container">
+            <div class="seminar-grid" id="seminarGrid"></div>
+        </div>
+    </section>
+    <div id="footer"></div>
+    <script src="js/app.js"></script>
+    <script>
+        document.getElementById('navbar').innerHTML = renderNavbar('seminar');
+        document.getElementById('footer').innerHTML = renderFooter();
+        const seminars = DB.get('seminars') || [];
+        const semColors = { 'Online': { bg: '#d4edda', color: '#155724' }, 'Offline': { bg: '#f8d7da', color: '#721c24' } };
+        document.getElementById('seminarGrid').innerHTML = seminars.map(s => {
+            const sc = semColors[s.type] || semColors['Online'];
+            const catColor = s.type === 'Online' ? '#27ae60' : '#e74c3c';
+            return `
+            <div class="card seminar-card" style="padding:0;overflow:hidden;">
+                <div class="seminar-image" style="background:linear-gradient(135deg,${catColor}22,${catColor}11);display:flex;align-items:center;justify-content:center;font-size:4rem;">
+                    ${s.type === 'Online' ? '💻' : '🏢'}
+                    <span class="badge seminar-badge" style="background:${sc.bg};color:${sc.color};position:absolute;top:12px;left:12px;">${s.type}</span>
+                </div>
+                <div class="seminar-body">
+                    <h4>${s.title}</h4>
+                    <div class="seminar-meta">
+                        <span>📅 ${formatDate(s.date)}</span>
+                        <span>🕐 ${s.time}</span>
+                    </div>
+                    <a href="#" class="btn btn-outline btn-sm" onclick="alert('Pendaftaran berhasil! 🎉'); return false;">Daftar Sekarang</a>
+                </div>
+            </div>`;
+        }).join('');
+    </script>
+</body>
+</html>
