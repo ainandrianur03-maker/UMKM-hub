@@ -19,7 +19,7 @@
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>No</th><th>Gambar</th><th>Nama Produk</th><th>Kategori</th><th>Harga</th><th>Rating</th><th>Aksi</th></tr></thead>
+                        <thead><tr><th>No</th><th>Gambar</th><th>Nama Produk</th><th>Kategori</th><th>Target Pasar</th><th>Harga</th><th>Rating</th><th>Aksi</th></tr></thead>
                         <tbody id="productTable"></tbody>
                     </table>
                 </div>
@@ -45,6 +45,10 @@
                     <select class="form-control" id="pCategory">
                         <option>Makanan</option><option>Minuman</option><option>Fashion</option><option>Kerajinan</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Pasar</label>
+                    <input type="text" class="form-control" id="pTargetMarket" placeholder="Contoh: Mahasiswa, Ibu Rumah Tangga, Umum">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Harga (Rp)</label>
@@ -94,6 +98,7 @@
                     <td><div class="table-img" style="background:${catColor}22;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">${p.image ? `<img src="${p.image}" class="table-img">` : emoji}</div></td>
                     <td><strong>${p.name}</strong><br><small style="color:var(--neutral-500)">${p.desc || ''}</small></td>
                     <td><span class="badge badge-primary">${p.category}</span></td>
+                    <td>${p.targetMarket || '-'}</td>
                     <td>${formatRupiah(p.price)}</td>
                     <td>⭐ ${p.rating}</td>
                     <td>
@@ -146,6 +151,7 @@
             document.getElementById('editId').value = p.id;
             document.getElementById('pName').value = p.name;
             document.getElementById('pCategory').value = p.category;
+            document.getElementById('pTargetMarket').value = p.targetMarket || '';
             document.getElementById('pPrice').value = p.price;
             document.getElementById('pRating').value = p.rating;
             document.getElementById('pDesc').value = p.desc || '';
@@ -168,6 +174,7 @@
                 id: editId || genId(),
                 name: document.getElementById('pName').value,
                 category: document.getElementById('pCategory').value,
+                targetMarket: document.getElementById('pTargetMarket').value,
                 price: parseFloat(document.getElementById('pPrice').value),
                 rating: parseFloat(document.getElementById('pRating').value),
                 desc: document.getElementById('pDesc').value,

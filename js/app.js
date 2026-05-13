@@ -53,18 +53,18 @@ function initSeedData() {
     if (!DB.get('initialized')) {
         DB.set('config', { siteName:'UMKM Starter Hub', tagline:'Starter Hub', heroTitle:'Mulai Usaha UMKM dari Nol, Gak Pake Ribet!', heroSubtitle:'Panduan langkah demi langkah, inspirasi produk, hingga kalkulator harga jual untuk bantu kamu mulai dan mengembangkan usaha.', heroCta:'Mulai Sekarang', ctaTitle:'Siap Mulai Usaha?', ctaDesc:'Ikuti panduan starter guide dan wujudkan usahamu sekarang juga!', ctaCta:'Mulai Guide', footerDesc:'Platform pendamping UMKM pemula untuk memulai usaha dengan lebih mudah.', socialIG:'#', socialYT:'#', socialWA:'#' });
         DB.set('products', [
-            { id:'p1', name:'Keripik Pisang Cokelat', category:'Makanan', price:15000, rating:4.8, desc:'Keripik pisang dengan lapisan cokelat premium', image:'', color:'#e74c3c' },
-            { id:'p2', name:'Es Kopi Susu Literan', category:'Minuman', price:18000, rating:4.7, desc:'Kopi susu fresh dalam kemasan 1 liter', image:'', color:'#f39c12' },
-            { id:'p3', name:'Totebag Kanvas', category:'Fashion', price:35000, rating:4.9, desc:'Tas kanvas ramah lingkungan dengan desain unik', image:'', color:'#27ae60' },
-            { id:'p4', name:'Sambal Bawang Crispy', category:'Makanan', price:25000, rating:4.6, desc:'Sambal bawang goreng renyah dan pedas', image:'', color:'#e74c3c' },
-            { id:'p5', name:'Lilin Aromaterapi', category:'Kerajinan', price:45000, rating:4.8, desc:'Lilin wangi handmade dari soy wax', image:'', color:'#9b59b6' },
-            { id:'p6', name:'Granola Homemade', category:'Makanan', price:30000, rating:4.5, desc:'Granola sehat dengan campuran kacang dan buah kering', image:'', color:'#e74c3c' }
+            { id:'p1', name:'Keripik Pisang Cokelat', category:'Makanan', targetMarket:'Semua Kalangan', price:15000, rating:4.8, desc:'Keripik pisang dengan lapisan cokelat premium', image:'', color:'#e74c3c' },
+            { id:'p2', name:'Es Kopi Susu Literan', category:'Minuman', targetMarket:'Pekerja Kantoran, Mahasiswa', price:18000, rating:4.7, desc:'Kopi susu fresh dalam kemasan 1 liter', image:'', color:'#f39c12' },
+            { id:'p3', name:'Totebag Kanvas', category:'Fashion', targetMarket:'Wanita, Mahasiswa', price:35000, rating:4.9, desc:'Tas kanvas ramah lingkungan dengan desain unik', image:'', color:'#27ae60' },
+            { id:'p4', name:'Sambal Bawang Crispy', category:'Makanan', targetMarket:'Keluarga, Pecinta Pedas', price:25000, rating:4.6, desc:'Sambal bawang goreng renyah dan pedas', image:'', color:'#e74c3c' },
+            { id:'p5', name:'Lilin Aromaterapi', category:'Kerajinan', targetMarket:'Wanita, Pekerja Kantoran', price:45000, rating:4.8, desc:'Lilin wangi handmade dari soy wax', image:'', color:'#9b59b6' },
+            { id:'p6', name:'Granola Homemade', category:'Makanan', targetMarket:'Pecinta Makanan Sehat', price:30000, rating:4.5, desc:'Granola sehat dengan campuran kacang dan buah kering', image:'', color:'#e74c3c' }
         ]);
         DB.set('seminars', [
-            { id:'s1', title:'Cara Jualan Laris di Instagram', type:'Online', date:'2025-05-20', time:'19:00 - 21:00 WIB', desc:'Pelajari strategi marketing Instagram untuk UMKM' },
-            { id:'s2', title:'Branding Produk UMKM yang Menarik', type:'Offline', date:'2025-05-28', time:'09:00 - 12:00 WIB', desc:'Workshop branding dan packaging produk' },
-            { id:'s3', title:'Mengelola Keuangan UMKM', type:'Online', date:'2025-06-05', time:'14:00 - 16:00 WIB', desc:'Tips pencatatan keuangan sederhana untuk usaha kecil' },
-            { id:'s4', title:'Fotografi Produk dengan HP', type:'Online', date:'2025-06-12', time:'10:00 - 12:00 WIB', desc:'Teknik foto produk profesional hanya dengan smartphone' }
+            { id:'s1', title:'Cara Jualan Laris di Instagram', type:'Online', date:'2025-05-20', time:'19:00 - 21:00 WIB', desc:'Pelajari strategi marketing Instagram untuk UMKM', linkDaftar:'https://forms.gle/dummy123' },
+            { id:'s2', title:'Branding Produk UMKM yang Menarik', type:'Offline', date:'2025-05-28', time:'09:00 - 12:00 WIB', desc:'Workshop branding dan packaging produk', linkDaftar:'https://forms.gle/dummy123' },
+            { id:'s3', title:'Mengelola Keuangan UMKM', type:'Online', date:'2025-06-05', time:'14:00 - 16:00 WIB', desc:'Tips pencatatan keuangan sederhana untuk usaha kecil', linkDaftar:'https://forms.gle/dummy123' },
+            { id:'s4', title:'Fotografi Produk dengan HP', type:'Online', date:'2025-06-12', time:'10:00 - 12:00 WIB', desc:'Teknik foto produk profesional hanya dengan smartphone', linkDaftar:'https://forms.gle/dummy123' }
         ]);
         DB.set('guideSteps', [
             { id:'g1', number:1, title:'Tentukan Ide Usaha', desc:'Temukan ide usaha yang sesuai minat dan peluang.', icon:'💡' },
@@ -145,6 +145,26 @@ function migrateDummyData() {
         }
     });
     if (updatedM) DB.set('modules', modules);
+
+    let products = DB.get('products') || [];
+    let updatedP = false;
+    products.forEach(p => {
+        if (!p.targetMarket) {
+            p.targetMarket = 'Semua Kalangan';
+            updatedP = true;
+        }
+    });
+    if (updatedP) DB.set('products', products);
+
+    let seminars = DB.get('seminars') || [];
+    let updatedS = false;
+    seminars.forEach(s => {
+        if (!s.linkDaftar) {
+            s.linkDaftar = 'https://forms.gle/dummy123';
+            updatedS = true;
+        }
+    });
+    if (updatedS) DB.set('seminars', seminars);
 }
 migrateDummyData();
 
@@ -231,6 +251,7 @@ function renderSidebar(activePage) {
         <div class="sidebar-divider"></div>
         <a href="konfigurasi.html" class="${activePage==='config'?'active':''}"><span class="icon">⚙️</span> Konfigurasi</a>
         <div class="sidebar-divider"></div>
+        <a href="#" onclick="exportSeedData(); return false;" style="color: var(--primary-600);"><span class="icon">💾</span> Export Data Code</a>
         <a href="../index.html"><span class="icon">🌐</span> Lihat Website</a>
     </nav>
     <div class="sidebar-footer"><a href="#" onclick="logout(); return false;"><span class="icon">🚪</span> Logout</a></div>
@@ -251,5 +272,48 @@ function renderProductCard(p) {
     const emoji = getProductEmoji(p.category), catColor = getCatColor(p.category);
     const imgStyle = p.image ? `background-image:url('${p.image}');background-size:cover;background-position:center;` : `background:linear-gradient(135deg,${catColor}22,${catColor}11);display:flex;align-items:center;justify-content:center;font-size:4rem;`;
     return `<div class="product-card"><div class="product-image" style="${imgStyle}">${p.image?'':emoji}<span class="badge-cat" style="background:${catColor}">${p.category}</span></div>
-    <div class="product-info"><h4>${p.name}</h4><div class="product-meta"><span class="product-price">${formatRupiah(p.price)}</span><span class="product-rating"><span class="star">⭐</span> ${p.rating}</span></div></div></div>`;
+    <div class="product-info"><h4>${p.name}</h4><div style="font-size:0.85rem; color:var(--neutral-500); margin-bottom: 0.5rem; display:flex; align-items:center; gap: 4px;">🎯 ${p.targetMarket || '-'}</div><div class="product-meta"><span class="product-price">${formatRupiah(p.price)}</span><span class="product-rating"><span class="star">⭐</span> ${p.rating}</span></div></div></div>`;
 }
+
+/* ---- Export Data Feature ---- */
+function exportSeedData() {
+    const products = DB.get('products') || [];
+    const seminars = DB.get('seminars') || [];
+    
+    // Format JSON array with 4 spaces for readability
+    const pStr = "        DB.set('products', " + JSON.stringify(products, null, 4) + ");";
+    const sStr = "        DB.set('seminars', " + JSON.stringify(seminars, null, 4) + ");";
+    
+    const output = `// --- SILAKAN COPY KODE DI BAWAH INI ---\n// Buka file js/app.js\n// Cari bagian DB.set('products', ...) dan DB.set('seminars', ...) di dalam fungsi initSeedData()\n// Hapus baris lama dan paste (timpa) dengan kode di bawah ini:\n\n${pStr}\n\n${sStr}`;
+    
+    let m = document.getElementById('exportModalOverlay');
+    if (!m) {
+        m = document.createElement('div');
+        m.id = 'exportModalOverlay';
+        m.className = 'modal-overlay';
+        m.innerHTML = `
+        <div class="modal" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3>💾 Export Data ke app.js</h3>
+                <button class="modal-close" onclick="document.getElementById('exportModalOverlay').classList.remove('active')">✕</button>
+            </div>
+            <div style="padding: 1rem;">
+                <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--neutral-600);">Berikut adalah data terbaru Anda. Silakan copy dan paste (timpa) ke dalam file <strong>js/app.js</strong> lalu Commit & Push ke GitHub agar perubahan muncul di Vercel.</p>
+                <textarea id="exportTextarea" style="width: 100%; height: 350px; font-family: monospace; font-size: 0.8rem; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: var(--neutral-50); outline: none; resize: none;" readonly></textarea>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.75rem;" onclick="copyExportData()">📋 Copy Code</button>
+            </div>
+        </div>
+        `;
+        document.body.appendChild(m);
+    }
+    document.getElementById('exportTextarea').value = output;
+    m.classList.add('active');
+}
+
+function copyExportData() {
+    const ta = document.getElementById('exportTextarea');
+    ta.select();
+    document.execCommand('copy');
+    showToast('Kode berhasil disalin! Silakan paste di file js/app.js');
+}
+
